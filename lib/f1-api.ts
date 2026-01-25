@@ -1,4 +1,4 @@
-import { Race, RaceCardModel, DriverStanding, DriverStandingRowModel, ConstructorStandingRowModel } from "./f1-types"
+import { Race, RaceCardModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel } from "./f1-types"
 
 const BASE_URL = "https://api.jolpi.ca/ergast/f1"
 
@@ -42,7 +42,7 @@ export async function getDriverStandings(season: string): Promise<DriverStanding
     if (driverStandings.length === 0){
         return driverStandings
     }
-    
+
     const driverStandingsMapped: DriverStandingRowModel[] = driverStandings.map((driverSanding: DriverStanding) => ({
         position: driverSanding.position,
         name: `${driverSanding.Driver?.givenName}` + ` ${driverSanding.Driver?.familyName}`,
@@ -61,4 +61,37 @@ export async function getDriverStandings(season: string): Promise<DriverStanding
     })
 
     return driverStandingsMapped
+}
+
+export async function getConstructorStandings(season: string): Promise<ConstructorStandingRowModel[]> {
+    const response = await fetch(`${BASE_URL}/${season}/constructorStandings.json`)
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch F1 constructor standings")
+    }
+
+    const data = await response.json()
+    const constructorStandings = data.MRData.StandingsTable.StandingsLists[0]?.ConstructorStandings || []
+
+    if (constructorStandings.length === 0){
+        return constructorStandings
+    }
+    
+    const constructorStandingsMapped: ConstructorStandingRowModel[] = constructorStandings.map((constructorSanding: ConstructorStanding) => ({
+        position: constructorSanding.position,
+        name: constructorSanding.Constructor?.name,
+        nationality: constructorSanding.Constructor?.nationality,
+        points: constructorSanding.points,
+        wins: constructorSanding.wins
+    }))
+
+    constructorStandingsMapped.sort((a, b) => {
+        if (a.points !== b.points){
+            return b.points - a.points;
+        }
+
+        return b.wins - a.wins;
+    })
+
+    return constructorStandingsMapped
 }
