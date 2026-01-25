@@ -1,4 +1,4 @@
-import { Race, RaceCardModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel } from "./f1-types"
+import { Race, RaceCardModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel, ResultsPageModel, Result, RaceResultRowModel } from "./f1-types"
 
 const BASE_URL = "https://api.jolpi.ca/ergast/f1"
 
@@ -94,4 +94,40 @@ export async function getConstructorStandings(season: string): Promise<Construct
     })
 
     return constructorStandingsMapped
+}
+
+export async function getRaceResults(season: string, round: number): Promise <ResultsPageModel | null>{
+    const response = await fetch(`${BASE_URL}/${season}/${round}/results.json`)
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch F1 race results")
+    }
+
+    const data = await response.json()
+    const raceData = data.MRData.RaceTable.Races[0]
+    if (!raceData) return null
+
+    const results: RaceResultRowModel[] = (raceData.Results ?? []).map((result: Result): RaceResultRowModel => ({
+        number: result.number ?? "",
+        position: Number(result.position),
+        points: Number(result.points),
+        driver: `${result.Driver?.givenName}` + `${result.Driver?.familyName}`,
+        constructor: result.Constructor?.name ?? "",
+        grid: Number(result.grid),
+        status: result.status ?? "",
+        time: result.Time?.time,
+    }))
+
+    results.sort((a, b) => a.position - b.position);
+
+    return {
+        round: Number(raceData.round),
+        raceName: raceData.raceName,
+        circuitName: raceData.Circuit?.circuitName,
+        locality: raceData.Circuit?.Location?.locality,
+        country: raceData.Circuit?.Location?.country,
+        date: raceData.date,
+        time: raceData.time,
+        results,
+    };
 }
