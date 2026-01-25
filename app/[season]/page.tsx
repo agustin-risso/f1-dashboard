@@ -17,7 +17,7 @@ export default async function Page({ params }: PageProps) {
     return (
         <div className="mx-auto max-w-5xl px-4 py-6 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {schedule.map((race: RaceCardModel) => (
-                <div className="w-full flex flex-col rounded-lg bg-gray-800 p-4">
+                <div key={race.date} className="w-full flex flex-col rounded-lg bg-gray-800 p-4">
                     <h2>Round {race.round}: {race.title}</h2>
                     <p>{race.circuit}</p>
                     <p>{race.locality}, {race.country}</p>
