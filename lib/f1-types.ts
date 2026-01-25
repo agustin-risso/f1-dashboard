@@ -230,3 +230,25 @@ export interface ConstructorStandingRowModel {
   points: number;
   wins: number;
 }
+
+export interface ResultsPageModel {
+  round: number;
+  raceName: string;
+  circuitName: string;
+  locality: string;
+  country: string;
+  date: string;
+  time?: string;
+  results: RaceResultRowModel[];
+}
+
+export interface RaceResultRowModel {
+  number: string;
+  position: number;
+  points: number;
+  driver: string;
+  constructor: string;
+  grid: number;
+  status: string;
+  time?: string;
+}
