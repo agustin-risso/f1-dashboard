@@ -225,7 +225,7 @@ export interface DriverStandingRowModel {
 
 export interface ConstructorStandingRowModel {
   position: number;
-  constructorName: string;
+  name: string;
   nationality?: string;
   points: number;
   wins: number;
