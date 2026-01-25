@@ -216,11 +216,11 @@ export interface RaceCardModel {
 
 export interface DriverStandingRowModel {
   position: number;
-  driverName: string;
+  name: string;
   nationality?: string;
   points: number;
   wins: number;
-  constructors: string[];
+  team: string[];
 }
 
 export interface ConstructorStandingRowModel {
