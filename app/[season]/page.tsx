@@ -23,7 +23,7 @@ export default async function Page({ params }: PageProps) {
                     <p>{race.locality}, {race.country}</p>
                     <p>{formatRaceDate(race.date, race.time)}</p>
                     {race.date < new Date().toISOString() && (
-                        <Link className="self-end underline cursor-pointer" href={"race-details"}>See race results {'>'}</Link>
+                        <Link className="self-end underline cursor-pointer" href={`/${season}/races/${race.round}`}>See race results {'>'}</Link>
                     )}
                 </div>
             ))}
