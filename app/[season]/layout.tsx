@@ -17,7 +17,7 @@ export default async function SeasonLayout({ children, params }: LayoutProps) {
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href={`/${season}`} className="font-bold text-xl tracking-tight text-gradient-f1">
-              F1 DASH
+              F1 DASHBOARD
             </Link>
 
             <nav className="flex items-center gap-5">

@@ -1,4 +1,4 @@
-import { Race, RaceCardModel, SessionModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel, ResultsPageModel, Result, RaceResultRowModel } from "./f1-types"
+import { Race, RaceCardModel, SessionModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel, ResultsPageModel, Result, RaceResultRowModel, QualifyingRowModel, SprintRowModel } from "./f1-types"
 
 const BASE_URL = "https://api.jolpi.ca/ergast/f1"
 
@@ -78,6 +78,9 @@ export async function getDriverStandings(season: string): Promise<DriverStanding
         return b.wins - a.wins;
     })
 
+    // Assign positions based on sorted order (API omits position for unranked drivers)
+    driverStandingsMapped.forEach((d, i) => d.position = i + 1)
+
     return driverStandingsMapped
 }
 
@@ -110,6 +113,9 @@ export async function getConstructorStandings(season: string): Promise<Construct
 
         return b.wins - a.wins;
     })
+
+    // Assign positions based on sorted order (API omits position for unranked constructors)
+    constructorStandingsMapped.forEach((c, i) => c.position = i + 1)
 
     return constructorStandingsMapped
 }
@@ -149,4 +155,45 @@ export async function getRaceResults(season: string, round: number): Promise <Re
         time: raceData.time,
         results,
     };
+}
+
+export async function getQualifyingResults(season: string, round: number): Promise<QualifyingRowModel[]> {
+    const response = await fetch(`${BASE_URL}/${season}/${round}/qualifying.json`)
+    if (!response.ok) return []
+
+    const data = await response.json()
+    const race = data.MRData.RaceTable.Races[0]
+    if (!race?.QualifyingResults) return []
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return race.QualifyingResults.map((r: any): QualifyingRowModel => ({
+        position: Number(r.position),
+        driver: `${r.Driver?.givenName} ${r.Driver?.familyName}`,
+        nationality: r.Driver?.nationality ?? "",
+        constructor: r.Constructor?.name ?? "",
+        q1: r.Q1,
+        q2: r.Q2,
+        q3: r.Q3,
+    })).sort((a: QualifyingRowModel, b: QualifyingRowModel) => a.position - b.position)
+}
+
+export async function getSprintResults(season: string, round: number): Promise<SprintRowModel[]> {
+    const response = await fetch(`${BASE_URL}/${season}/${round}/sprint.json`)
+    if (!response.ok) return []
+
+    const data = await response.json()
+    const race = data.MRData.RaceTable.Races[0]
+    if (!race?.SprintResults) return []
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return race.SprintResults.map((r: any): SprintRowModel => ({
+        position: Number(r.position),
+        driver: `${r.Driver?.givenName} ${r.Driver?.familyName}`,
+        nationality: r.Driver?.nationality ?? "",
+        constructor: r.Constructor?.name ?? "",
+        grid: r.grid != null ? Number(r.grid) : NaN,
+        status: r.status ?? "",
+        time: r.Time?.time,
+        points: Number(r.points),
+    })).sort((a: SprintRowModel, b: SprintRowModel) => a.position - b.position)
 }

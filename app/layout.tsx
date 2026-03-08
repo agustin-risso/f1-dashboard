@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "F1 Dashboard",
   description: "Formula 1 statistics, standings and race results",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

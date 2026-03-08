@@ -260,3 +260,24 @@ export interface RaceResultRowModel {
   status: string;
   time?: string;
 }
+
+export interface QualifyingRowModel {
+  position: number;
+  driver: string;
+  nationality?: string;
+  constructor: string;
+  q1?: string;
+  q2?: string;
+  q3?: string;
+}
+
+export interface SprintRowModel {
+  position: number;
+  driver: string;
+  nationality?: string;
+  constructor: string;
+  grid: number;
+  status: string;
+  time?: string;
+  points: number;
+}
