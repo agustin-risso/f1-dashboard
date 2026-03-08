@@ -29,7 +29,7 @@ export function NavLink({ href, children }: { href: string; children: ReactNode 
     >
       {children}
       {isActive && (
-        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary rounded-full" />
+        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
       )}
     </Link>
   )
