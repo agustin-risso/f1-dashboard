@@ -1,45 +1,50 @@
-"use client";
+"use client"
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/shadcn/select"
 
-const SEASONS = ["current", "2026", "2025", "2024", "2023"] as const;
+const SEASONS = ["current", "2026", "2025", "2024", "2023"] as const
 
-type Season = (typeof SEASONS)[number];
+type Season = (typeof SEASONS)[number]
 
 export function SeasonSelect({ currentSeason }: { currentSeason: string }) {
-    const pathname = usePathname();
-    const router = useRouter();
+  const pathname = usePathname()
+  const router = useRouter()
 
-    const value: Season | string = SEASONS.includes(currentSeason as Season)
-        ? (currentSeason as Season)
-        : currentSeason;
-    
-    function onChange (nextSeason: string) {
-        const parts = pathname.split("/").filter(Boolean);
+  const value: Season | string = SEASONS.includes(currentSeason as Season)
+    ? (currentSeason as Season)
+    : currentSeason
 
-        if (parts.length === 0) {
-            router.push(`/${nextSeason}`);
-            return;
-        }
+  function onChange(nextSeason: string) {
+    const parts = pathname.split("/").filter(Boolean)
 
-        parts[0] = nextSeason;
-        router.push(`/${parts.join("/")}`);
+    if (parts.length === 0) {
+      router.push(`/${nextSeason}`)
+      return
     }
 
-    return (
-        <label className="flex items-center gap-2 text-sm">
-            <span className="opacity-80">Season</span>
-            <select
-                className="rounded border px-2 py-1 bg-transparent"
-                value={value}
-                onChange={(e)=> onChange(e.target.value)}
-            >
-                {SEASONS.map((season) => (
-                    <option key={season} value={season}>
-                        {season}
-                    </option>
-                ))}
-            </select>
-        </label>
-    );
+    parts[0] = nextSeason
+    router.push(`/${parts.join("/")}`)
+  }
+
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-30 h-8 text-sm bg-transparent border-border/50 hover:border-border transition-colors">
+        <SelectValue placeholder="Temporada" />
+      </SelectTrigger>
+      <SelectContent>
+        {SEASONS.map((season) => (
+          <SelectItem key={season} value={season} className="text-sm">
+            {season === "current" ? "Actual" : season}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
 }
