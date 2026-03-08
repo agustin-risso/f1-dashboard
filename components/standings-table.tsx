@@ -8,6 +8,7 @@ import {
 } from "@/components/shadcn/table"
 import { PositionBadge } from "@/components/position-badge"
 import { cn } from "@/lib/utils"
+import { getFlag } from "@/lib/flags"
 
 export interface TableColumn {
   key: string
@@ -22,13 +23,16 @@ const podiumBorder: Record<number, string> = {
 }
 
 function ChangeIndicator({ value }: { value: number }) {
+  if (isNaN(value)) {
+    return <span className="font-mono text-muted-foreground">-</span>
+  }
   if (value > 0) {
     return <span className="font-mono text-emerald-400">+{value}</span>
   }
   if (value < 0) {
     return <span className="font-mono text-red-400">{value}</span>
   }
-  return <span className="font-mono text-muted-foreground">-</span>
+  return <span className="font-mono text-muted-foreground">0</span>
 }
 
 export function StandingsTable({
@@ -83,6 +87,11 @@ export function StandingsTable({
                     <PositionBadge position={row[col.key] as number} />
                   ) : col.key === "change" ? (
                     <ChangeIndicator value={row[col.key] as number} />
+                  ) : (col.key === "name" || col.key === "driver") && row.nationality ? (
+                    <span className="flex items-center gap-2">
+                      <span>{getFlag(row.nationality as string)}</span>
+                      <span>{String(row[col.key] ?? "")}</span>
+                    </span>
                   ) : (
                     <span
                       className={cn(

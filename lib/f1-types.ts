@@ -202,6 +202,12 @@ export interface RaceResultsResponse {
  *  Mantienen tus componentes desacoplados del JSON
  *  ========================= */
 
+export interface SessionModel {
+  name: string;
+  date: string;
+  time?: string;
+}
+
 export interface RaceCardModel {
   season: string;
   round: number;
@@ -212,6 +218,7 @@ export interface RaceCardModel {
   locality?: string;
   country?: string;
   url?: string;
+  sessions: SessionModel[];
 }
 
 export interface DriverStandingRowModel {
@@ -247,6 +254,7 @@ export interface RaceResultRowModel {
   position: number;
   points: number;
   driver: string;
+  nationality?: string;
   constructor: string;
   grid: number;
   status: string;

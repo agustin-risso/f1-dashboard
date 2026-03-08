@@ -1,4 +1,4 @@
-import { Race, RaceCardModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel, ResultsPageModel, Result, RaceResultRowModel } from "./f1-types"
+import { Race, RaceCardModel, SessionModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel, ResultsPageModel, Result, RaceResultRowModel } from "./f1-types"
 
 const BASE_URL = "https://api.jolpi.ca/ergast/f1"
 
@@ -12,21 +12,39 @@ export async function getSchedule(season: string): Promise<RaceCardModel[]> {
     const data = await response.json()
     const races = data.MRData.RaceTable.Races
 
-    const racesMapped: RaceCardModel[] = races.map((race: Race) => ({
-        season: race.season,
-        round: Number(race.round),
-        title: race.raceName,
-        date: race.date,
-        time: race.time || "",
-        circuit: race.Circuit?.circuitName,
-        locality: race.Circuit?.Location?.locality || "",
-        country: race.Circuit?.Location?.country || "",
-        url: race.url || "",
-    }))
+    const racesMapped: RaceCardModel[] = races.map((race: Race) => {
+        const sessions: SessionModel[] = []
+
+        if (race.FirstPractice?.date) sessions.push({ name: "Práctica 1", date: race.FirstPractice.date, time: race.FirstPractice.time })
+        if (race.SecondPractice?.date) sessions.push({ name: "Práctica 2", date: race.SecondPractice.date, time: race.SecondPractice.time })
+        if (race.ThirdPractice?.date) sessions.push({ name: "Práctica 3", date: race.ThirdPractice.date, time: race.ThirdPractice.time })
+        if (race.SprintQualifying?.date) sessions.push({ name: "Clasificación Sprint", date: race.SprintQualifying.date, time: race.SprintQualifying.time })
+        if (race.Sprint?.date) sessions.push({ name: "Sprint", date: race.Sprint.date, time: race.Sprint.time })
+        if (race.Qualifying?.date) sessions.push({ name: "Clasificación", date: race.Qualifying.date, time: race.Qualifying.time })
+        if (race.date) sessions.push({ name: "Carrera", date: race.date, time: race.time })
+
+        return {
+            season: race.season,
+            round: Number(race.round),
+            title: race.raceName,
+            date: race.date,
+            time: race.time || "",
+            circuit: race.Circuit?.circuitName,
+            locality: race.Circuit?.Location?.locality || "",
+            country: race.Circuit?.Location?.country || "",
+            url: race.url || "",
+            sessions,
+        }
+    })
 
     racesMapped.sort((a, b) => a.round - b.round);
 
     return racesMapped
+}
+
+export async function getRaceInfo(season: string, round: number): Promise<RaceCardModel | null> {
+    const schedule = await getSchedule(season)
+    return schedule.find(r => r.round === Number(round)) ?? null
 }
 
 export async function getDriverStandings(season: string): Promise<DriverStandingRowModel[]> {
@@ -111,9 +129,10 @@ export async function getRaceResults(season: string, round: number): Promise <Re
         number: result.number ?? "",
         position: Number(result.position),
         points: Number(result.points),
-        driver: `${result.Driver?.givenName}` + `${result.Driver?.familyName}`,
+        driver: `${result.Driver?.givenName} ${result.Driver?.familyName}`,
+        nationality: result.Driver?.nationality ?? "",
         constructor: result.Constructor?.name ?? "",
-        grid: Number(result.grid),
+        grid: result.grid != null ? Number(result.grid) : NaN,
         status: result.status ?? "",
         time: result.Time?.time,
     }))

@@ -1,5 +1,5 @@
 import { RaceResultRowModel } from "@/lib/f1-types"
-import { getRaceResults } from "@/lib/f1-api"
+import { getRaceResults, getRaceInfo } from "@/lib/f1-api"
 import { formatRaceDate } from "@/lib/date-helpers"
 import { PageHeader } from "@/components/page-header"
 import { AnimatedLayout } from "@/components/animated-layout"
@@ -7,7 +7,9 @@ import { StandingsTable } from "@/components/standings-table"
 import { PositionBadge } from "@/components/position-badge"
 import { EmptyState } from "@/components/empty-state"
 import { Card, CardContent } from "@/components/shadcn/card"
+import { Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getFlag } from "@/lib/flags"
 
 type PageProps = {
   params: Promise<{ season: string; round: number }>
@@ -32,31 +34,48 @@ const resultColumns = [
 
 export default async function RaceResults({ params }: PageProps) {
   const { season, round } = await params
-  const results = await getRaceResults(season, round)
+  const [results, raceInfo] = await Promise.all([
+    getRaceResults(season, round),
+    getRaceInfo(season, round),
+  ])
 
-  if (!results) {
+  if (!raceInfo) {
     return (
       <AnimatedLayout>
-        <EmptyState message="No se encontraron resultados para esta carrera" />
+        <EmptyState message="No se encontró información de esta carrera" />
       </AnimatedLayout>
     )
   }
 
-  const top3 = results.results.slice(0, 3)
-
-  const tableRows = results.results.map((r: RaceResultRowModel) => ({
-    ...r,
-    change: r.grid - r.position,
-    time: r.time || r.status,
-  }))
+  const isPast = raceInfo.date < new Date().toISOString()
 
   return (
     <AnimatedLayout>
       <PageHeader
-        title={results.raceName}
-        subtitle={`Round ${results.round} · ${results.circuitName} · ${results.locality}, ${results.country}`}
+        title={raceInfo.title}
+        subtitle={`Round ${raceInfo.round} · ${raceInfo.circuit} · ${raceInfo.locality}, ${raceInfo.country}`}
       />
 
+      {isPast && results ? (
+        <PastRaceView results={results} />
+      ) : (
+        <UpcomingRaceView raceInfo={raceInfo} />
+      )}
+    </AnimatedLayout>
+  )
+}
+
+function PastRaceView({ results }: { results: { date: string; time?: string; results: RaceResultRowModel[] } }) {
+  const top3 = results.results.slice(0, 3)
+  const tableRows = results.results.map((r: RaceResultRowModel) => ({
+    ...r,
+    grid: isNaN(r.grid) ? "-" : r.grid,
+    change: isNaN(r.grid) ? NaN : r.grid - r.position,
+    time: r.time || r.status,
+  }))
+
+  return (
+    <>
       <p className="text-sm text-muted-foreground mb-8 -mt-4">
         {formatRaceDate(results.date, results.time)}
       </p>
@@ -77,7 +96,7 @@ export default async function RaceResults({ params }: PageProps) {
             >
               <CardContent className="space-y-2">
                 <PositionBadge position={i + 1} />
-                <p className="font-semibold text-sm mt-2">{driver.driver}</p>
+                <p className="font-semibold text-sm mt-2">{getFlag(driver.nationality)} {driver.driver}</p>
                 <p className="text-xs text-muted-foreground">{driver.constructor}</p>
                 <p className="font-mono text-sm text-primary">
                   {driver.time || driver.status}
@@ -92,6 +111,39 @@ export default async function RaceResults({ params }: PageProps) {
       <div className="max-w-4xl mx-auto">
         <StandingsTable columns={resultColumns} rows={tableRows} highlightTopN={3} />
       </div>
-    </AnimatedLayout>
+    </>
+  )
+}
+
+function UpcomingRaceView({ raceInfo }: { raceInfo: { sessions: { name: string; date: string; time?: string }[] } }) {
+  return (
+    <div className="max-w-lg mx-auto -mt-4">
+      <h2 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2">
+        <Clock className="h-4 w-4" />
+        Horarios del fin de semana
+      </h2>
+
+      <div className="space-y-2">
+        {raceInfo.sessions.map((session) => (
+          <div
+            key={session.name}
+            className={cn(
+              "glass rounded-lg px-4 py-3 flex items-center justify-between transition-colors hover:bg-accent/20",
+              session.name === "Carrera" && "border-l-2 border-l-primary"
+            )}
+          >
+            <span className={cn(
+              "text-sm",
+              session.name === "Carrera" ? "font-semibold text-foreground" : "text-muted-foreground"
+            )}>
+              {session.name}
+            </span>
+            <span className="text-sm font-mono text-foreground">
+              {formatRaceDate(session.date, session.time)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
