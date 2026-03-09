@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# F1 Dashboard
 
-## Getting Started
+Dashboard de Fórmula 1 con calendario de carreras, standings de pilotos y constructores, y resultados detallados por carrera con tabs de clasificación y sprint.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** — App Router, Server Components
+- **React 19** — con Tailwind CSS v4
+- **shadcn/ui** — componentes accesibles (Card, Table, Tabs, Badge, Select)
+- **Motion** — animaciones de entrada y transiciones
+- **TypeScript** — strict mode
+
+## Features
+
+- Calendario de la temporada con estado de carreras (finalizadas / próximas)
+- Standings de pilotos y constructores con banderas de país
+- Resultados de carrera: podio, tabla completa con grid y posiciones ganadas/perdidas
+- Tabs por carrera: Carrera · Clasificación (Q1/Q2/Q3) · Sprint · Horarios
+- Loading skeletons para todas las páginas
+- Error boundary con botón de reintento
+- Dark theme F1 con glassmorphism
+
+## Setup
 
 ```bash
+# 1. Clonar el repo
+git clone <tu-repo-url>
+cd f1-dashboard
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Configurar variables de entorno
+cp .env.example .env.local
+
+# 4. Correr en desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrí [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables de entorno
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_F1_API_URL` | URL base de la API de F1 | `https://api.jolpi.ca/ergast/f1` |
 
-## Learn More
+## Deploy en Vercel
 
-To learn more about Next.js, take a look at the following resources:
+1. Pusheá el repo a GitHub
+2. Entrá a [vercel.com](https://vercel.com) → **New Project** → importá el repo
+3. En **Environment Variables** agregá `NEXT_PUBLIC_F1_API_URL`
+4. Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Datos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Los datos provienen de la [Ergast F1 API](https://ergast.com/mrd/) a través del mirror público [api.jolpi.ca](https://api.jolpi.ca).
