@@ -2,6 +2,7 @@ import { ReactNode } from "react"
 import Link from "next/link"
 import { SeasonSelect } from "@/components/season-select"
 import { NavLink } from "@/components/nav-link"
+import { MobileMenu } from "@/components/mobile-menu"
 
 type LayoutProps = {
   children: ReactNode
@@ -20,14 +21,17 @@ export default async function SeasonLayout({ children, params }: LayoutProps) {
               F1 DASHBOARD
             </Link>
 
-            <nav className="flex items-center gap-5">
+            <nav className="hidden sm:flex items-center gap-5">
               <NavLink href={`/${season}`}>Calendario</NavLink>
               <NavLink href={`/${season}/drivers`}>Pilotos</NavLink>
               <NavLink href={`/${season}/teams`}>Equipos</NavLink>
             </nav>
           </div>
 
-          <SeasonSelect currentSeason={season} />
+          <div className="flex items-center gap-2">
+            <SeasonSelect currentSeason={season} />
+            <MobileMenu season={season} />
+          </div>
         </div>
         <div className="h-px bg-linear-to-r from-transparent via-primary/40 to-transparent" />
       </header>
