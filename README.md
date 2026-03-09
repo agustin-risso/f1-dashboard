@@ -1,3 +1,7 @@
+# URL Demo
+
+[text](https://f1-dashboard-pi.vercel.app/current)
+
 # F1 Dashboard
 
 Dashboard de Fórmula 1 con calendario de carreras, standings de pilotos y constructores, y resultados detallados por carrera con tabs de clasificación y sprint.
@@ -44,13 +48,6 @@ Abrí [http://localhost:3000](http://localhost:3000).
 | Variable | Descripción | Default |
 |----------|-------------|---------|
 | `NEXT_PUBLIC_F1_API_URL` | URL base de la API de F1 | `https://api.jolpi.ca/ergast/f1` |
-
-## Deploy en Vercel
-
-1. Pusheá el repo a GitHub
-2. Entrá a [vercel.com](https://vercel.com) → **New Project** → importá el repo
-3. En **Environment Variables** agregá `NEXT_PUBLIC_F1_API_URL`
-4. Deploy
 
 ## Datos
 
