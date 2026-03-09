@@ -37,7 +37,15 @@ export default async function SeasonLayout({ children, params }: LayoutProps) {
       </main>
 
       <footer className="border-t border-border/50 py-4 text-center text-xs text-muted-foreground">
-        F1 Dashboard · Data from Ergast API
+        F1 Dashboard · Data from Ergast API · Desarrollado por{" "}
+        <a
+          href="https://github.com/agustin-risso"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-foreground transition-colors"
+        >
+          Agustín Risso
+        </a>
       </footer>
     </div>
   )

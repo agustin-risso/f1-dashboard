@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/shadcn/select"
 
-const SEASONS = ["current", "2026", "2025", "2024", "2023"] as const
+const SEASONS = ["current", "2025", "2024", "2023"] as const
 
 type Season = (typeof SEASONS)[number]
 
