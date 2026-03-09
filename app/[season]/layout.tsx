@@ -46,7 +46,7 @@ export default async function SeasonLayout({ children, params }: LayoutProps) {
           href="https://github.com/agustin-risso"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-foreground transition-colors"
+          className="hover:text-foreground underline transition-colors"
         >
           Agustín Risso
         </a>
