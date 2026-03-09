@@ -1,6 +1,6 @@
 # URL Demo
 
-[text](https://f1-dashboard-pi.vercel.app/current)
+https://f1-dashboard-pi.vercel.app/current
 
 # F1 Dashboard
 
