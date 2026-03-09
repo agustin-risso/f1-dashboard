@@ -1,6 +1,6 @@
 import { Race, RaceCardModel, SessionModel, DriverStanding, DriverStandingRowModel, ConstructorStanding, ConstructorStandingRowModel, ResultsPageModel, Result, RaceResultRowModel, QualifyingRowModel, SprintRowModel } from "./f1-types"
 
-const BASE_URL = "https://api.jolpi.ca/ergast/f1"
+const BASE_URL = process.env.NEXT_PUBLIC_F1_API_URL || "https://api.jolpi.ca/ergast/f1"
 
 export async function getSchedule(season: string): Promise<RaceCardModel[]> {
     const response = await fetch(`${BASE_URL}/${season}.json`)
